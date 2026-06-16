@@ -2874,42 +2874,6 @@ function App() {
               Your browser does not support the video tag.
             </video>
 
-            {/* Always-accessible premium glassmorphic Skip Intro button */}
-            <button
-              onClick={skipVideoIntro}
-              style={{
-                position: 'absolute',
-                top: '30px',
-                right: '30px',
-                background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '30px',
-                padding: '12px 24px',
-                color: '#fff',
-                fontSize: '13px',
-                fontWeight: '700',
-                letterSpacing: '1px',
-                cursor: 'pointer',
-                zIndex: 10002,
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                boxShadow: '0 4px 30px rgba(0, 0, 0, 0.2)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              Skip Intro
-            </button>
-
             {autoplayBlocked && (
               <div
                 onClick={startVideoWithSound}
