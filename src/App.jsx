@@ -221,7 +221,7 @@ function App() {
     const preloadArray = [];
     const onLoad = () => {
       loadedCount++;
-      if (loadedCount === (80 * 5 + 72)) {
+      if (loadedCount === (80 * 5 + 72 + 62 + 80)) {
         setFramesPreloaded(true);
       }
     };
@@ -259,6 +259,18 @@ function App() {
       img6.src = `/walk6/ezgif-frame-${frameNum}.png`;
       img6.onload = onLoad;
       preloadArray.push(img6);
+
+      if (i <= 62) {
+        const img7 = new Image();
+        img7.src = `/walk7/ezgif-frame-${frameNum}.png`;
+        img7.onload = onLoad;
+        preloadArray.push(img7);
+      }
+
+      const img8 = new Image();
+      img8.src = `/walk8/ezgif-frame-${frameNum}.png`;
+      img8.onload = onLoad;
+      preloadArray.push(img8);
     }
   }, []);
 
@@ -618,15 +630,30 @@ function App() {
     { sector: 'Coimbatore R&D workspace setup', spend: '₹14L', progress: '45%' }
   ]);
 
+  // Refs to keep track of latest state in event listeners without re-registering
+  const videoCompletedRef = useRef(videoCompleted);
+  const activeWorkspaceRef = useRef(activeWorkspace);
+
+  useEffect(() => {
+    videoCompletedRef.current = videoCompleted;
+  }, [videoCompleted]);
+
+  useEffect(() => {
+    activeWorkspaceRef.current = activeWorkspace;
+  }, [activeWorkspace]);
+
   // Global viewport scroll event propagation (wheel + touch swipe)
   useEffect(() => {
-    if (!videoCompleted || activeWorkspace) return;
-
     let touchStartY = 0;
 
     const handleGlobalWheel = (e) => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop += e.deltaY;
+      if (!videoCompletedRef.current || activeWorkspaceRef.current) return;
+
+      if (scrollContainerRef.current && !scrollContainerRef.current.contains(e.target)) {
+        scrollContainerRef.current.scrollBy({
+          top: e.deltaY,
+          behavior: 'auto'
+        });
       }
     };
 
@@ -635,10 +662,15 @@ function App() {
     };
 
     const handleGlobalTouchMove = (e) => {
-      if (scrollContainerRef.current) {
+      if (!videoCompletedRef.current || activeWorkspaceRef.current) return;
+
+      if (scrollContainerRef.current && !scrollContainerRef.current.contains(e.target)) {
         const touchY = e.touches[0].clientY;
         const deltaY = touchStartY - touchY;
-        scrollContainerRef.current.scrollTop += deltaY;
+        scrollContainerRef.current.scrollBy({
+          top: deltaY,
+          behavior: 'auto'
+        });
         touchStartY = touchY;
       }
     };
@@ -652,7 +684,7 @@ function App() {
       window.removeEventListener('touchstart', handleGlobalTouchStart);
       window.removeEventListener('touchmove', handleGlobalTouchMove);
     };
-  }, [videoCompleted, activeWorkspace]);
+  }, []);
 
   // ------------------- EVENT HANDLERS -------------------
   const handleSaveClient = () => {
@@ -834,8 +866,16 @@ function App() {
       const progress = Math.min(1, Math.max(0, (scrollTop - 5 * height) / height));
       const frameNum = String(Math.min(80, Math.floor(progress * 79) + 1)).padStart(3, '0');
       return `/walk6/ezgif-frame-${frameNum}.png`;
+    } else if (scrollTop <= 7 * height) {
+      const progress = Math.min(1, Math.max(0, (scrollTop - 6 * height) / height));
+      const frameNum = String(Math.min(62, Math.floor(progress * 61) + 1)).padStart(3, '0');
+      return `/walk7/ezgif-frame-${frameNum}.png`;
+    } else if (scrollTop <= 8 * height) {
+      const progress = Math.min(1, Math.max(0, (scrollTop - 7 * height) / height));
+      const frameNum = String(Math.min(80, Math.floor(progress * 79) + 1)).padStart(3, '0');
+      return `/walk8/ezgif-frame-${frameNum}.png`;
     }
-    return `/walk6/ezgif-frame-080.png`;
+    return `/walk8/ezgif-frame-080.png`;
   };
 
   // Premium 3D-deck slide transitions
@@ -963,7 +1003,7 @@ function App() {
     if (index === 0) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', opacity: 0.6 }}>
-          <p style={{ fontSize: '15px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--blue)', fontWeight: '800', marginBottom: '16px' }}>Scroll to Start</p>
+          <p style={{ fontSize: '15px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--blue)', fontWeight: '800', marginBottom: '16px' }}>Let's Go</p>
           <ArrowDown size={28} style={{ color: 'var(--blue)', animation: 'bounce 2s infinite' }} />
           <style>{`
             @keyframes bounce {
@@ -1064,6 +1104,10 @@ function App() {
                 </div>
               )}
             </div>
+            
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Define and drive the company’s vision, mission, and long-term goals. Focus on emerging industrial IoT sectors, brand authority, and strategic market positioning.
+            </p>
           </div>
         );
       case 1:
@@ -1187,6 +1231,10 @@ function App() {
                 </div>
               )}
             </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Identify new opportunities, global expansion routes and ARR strategies. Chart growth paths in automotive, smart cities, and heavy manufacturing.
+            </p>
           </div>
         );
       case 2:
@@ -1294,6 +1342,10 @@ function App() {
                 </div>
               )}
             </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Review strategic proposals, manage capital approvals and check investment ledgers. Authorize funds, track capex limits, and govern commercial proposals.
+            </p>
           </div>
         );
       case 3:
@@ -1368,6 +1420,10 @@ function App() {
                 </div>
               )}
             </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Build the core team, assign responsibilities and map company goals. Guide talent acquisition, check departmental progress, and coordinate feedback.
+            </p>
           </div>
         );
       case 4:
@@ -1455,6 +1511,10 @@ function App() {
                 </div>
               )}
             </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Track company returns, delivery projects and target deadlines. Keep tabs on ROI percentages, project timelines, and delivery milestones.
+            </p>
           </div>
         );
       case 5:
@@ -1493,6 +1553,10 @@ function App() {
                 </div>
               </div>
             </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Coordinate strategic deals, schedule high-level meetings and map partnerships. Foster enterprise relations, organize partner events, and schedule key discussions.
+            </p>
           </div>
         );
       case 6:
@@ -1546,6 +1610,10 @@ function App() {
                 </div>
               )}
             </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Track new IoT and AI capabilities and manage R&D project pitches. Investigate edge TinyML capabilities, solar sensors, and incubation pitches.
+            </p>
           </div>
         );
       case 7:
@@ -1604,6 +1672,10 @@ function App() {
                 </div>
               )}
             </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid var(--border)', lineHeight: '1.5' }}>
+              Monitor budgeting structures, capital expenditure spends and profit checklists. Enforce monthly caps, audit sector spends, and verify profitability indices.
+            </p>
           </div>
         );
       default:
@@ -3079,7 +3151,7 @@ function App() {
                 msOverflowStyle: 'none',
                 height: '84vh',
                 background: 'transparent',
-                scrollBehavior: 'smooth',
+                scrollBehavior: 'auto',
                 zIndex: 5
               }}
             >
